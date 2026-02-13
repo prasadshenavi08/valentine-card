@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Will You Be My Valentine?</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ffd1dc, #ff9eb5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .card {
+        background: white;
+        width: 420px;
+        padding: 30px;
+        border-radius: 25px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        position: relative;
+    }
+
+    h1 {
+        color: #ff4d6d;
+        font-size: 26px;
+        margin-bottom: 10px;
+    }
+
+    .cute-img {
+        width: 160px;
+        margin: 15px 0;
+        border-radius: 15px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .buttons {
+        margin-top: 20px;
+        position: relative;
+        height: 120px;
+    }
+
+    button {
+        border: none;
+        padding: 12px 28px;
+        font-size: 18px;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: 0.3s;
+        position: absolute;
+    }
+
+    #yesBtn {
+        background: #ff4d6d;
+        color: white;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 0;
+        box-shadow: 0 10px 20px rgba(255,77,109,0.4);
+    }
+
+    #yesBtn:hover {
+        transform: translateX(-50%) scale(1.1);
+    }
+
+    /* NO button initially center */
+    #noBtn {
+        background: #f1f1f1;
+        color: #444;
+        left: 50%;
+        top: 10px;
+        transform: translateX(-50%);
+    }
+
+    .shy-text {
+        margin-top: 5px;
+        font-size: 14px;
+        color: #888;
+        font-style: italic;
+    }
+
+    .message {
+        margin-top: 15px;
+        font-size: 16px;
+        color: #666;
+        min-height: 40px;
+        transition: 0.3s;
+    }
+
+    .message.highlighted {
+        background: linear-gradient(135deg, #fff5f7, #ffe0e6);
+        padding: 10px 15px;
+        border-radius: 15px;
+        border: 2px solid #ffb3c1;
+        font-weight: 500;
+        color: #ff4d6d;
+    }
+
+    .love-message {
+        font-size: 22px;
+        color: #ff4d6d;
+        animation: pop 0.5s ease;
+    }
+
+    @keyframes pop {
+        from { transform: scale(0.5); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    .heart {
+        position: absolute;
+        color: #ff4d6d;
+        font-size: 20px;
+        animation: hearts 6s linear infinite;
+    }
+
+    @keyframes hearts {
+        0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+        50% { opacity: 1; }
+        100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+    /* Reply form styles */
+    .reply-form {
+        margin-top: 20px;
+        display: none;
+        animation: slideIn 0.5s ease;
+    }
+
+    .reply-form.show {
+        display: block;
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reply-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ffb3c1;
+        border-radius: 15px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        resize: vertical;
+    }
+
+    .reply-input:focus {
+        outline: none;
+        border-color: #ff4d6d;
+    }
+
+    .send-btn {
+        background: #ff4d6d;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        font-size: 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        position: static;
+        box-shadow: 0 5px 15px rgba(255,77,109,0.3);
+    }
+
+    .send-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 20px rgba(255,77,109,0.4);
+    }
+
+    .send-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    .success-message {
+        color: #4CAF50;
+        font-size: 14px;
+        margin-top: 10px;
+        display: none;
+    }
+
+    .success-message.show {
+        display: block;
+        animation: pop 0.5s ease;
+    }
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div class="card">
+    <h1>Will You Be My Valentine? 💖</h1>
+
+    <img 
+        class="cute-img" 
+        id="mainGif"
+        src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif"
+    >
+
+    <div class="buttons">
+        <button id="noBtn">No 😢</button>
+        <button id="yesBtn">Yes 😍</button>
+    </div>
+
+    <div class="shy-text">"No" seems a bit shy 😈</div>
+
+    <div class="message" id="funnyMsg">
+        Please say yes na 😌
+    </div>
+
+    <!-- Reply form (hidden initially) -->
+    <div class="reply-form" id="replyForm">
+        <form action="https://api.web3forms.com/submit" method="POST" id="emailForm">
+            <input type="hidden" name="access_key" value="e2b8491f-0367-487a-a96d-472c20e227a0">
+            <input type="hidden" name="subject" value="Reply from Poma 💖">
+            <input type="hidden" name="from_name" value="Poma">
+            <input type="hidden" name="to_email" value="prasadshenavi1444@gmail.com">
+            
+            <textarea 
+                class="reply-input" 
+                name="message"
+                placeholder="Any reply for your Prasad"
+                rows="3"
+                required
+            ></textarea>
+            
+            <button type="submit" class="send-btn" id="sendBtn">Send 💌</button>
+        </form>
+        <div class="success-message" id="successMsg">Message sent! 💖</div>
+    </div>
+</div>
+
+<script>
+    const noBtn = document.getElementById("noBtn");
+    const funnyMsg = document.getElementById("funnyMsg");
+    const gif = document.getElementById("mainGif");
+    const replyForm = document.getElementById("replyForm");
+    const emailForm = document.getElementById("emailForm");
+    const sendBtn = document.getElementById("sendBtn");
+    const successMsg = document.getElementById("successMsg");
+
+    const messages = [
+        "Think again 😌",
+        "Don't do this to me 😭",
+        "Please no 😢",
+        "This could be a mistake 😳",
+        "I don't want heartbreak 😩"
+    ];
+
+    let clickCount = 0;
+    let firstNoClick = true;
+
+    noBtn.addEventListener("click", () => {
+
+        /* First click → change button text */
+        if (firstNoClick) {
+            noBtn.innerText = "Really? 😳";
+            funnyMsg.innerText = messages[0];
+            funnyMsg.classList.add("highlighted");
+            firstNoClick = false;
+            clickCount++;
+            
+            /* Change to funny GIF */
+            gif.src = "https://media.giphy.com/media/6uGhT1O4sxpi8/giphy.gif";
+        } else {
+            funnyMsg.innerText = messages[clickCount % messages.length];
+            funnyMsg.classList.add("highlighted");
+            clickCount++;
+        }
+
+        /* Move button on click */
+        moveButton();
+    });
+
+    function moveButton() {
+        const card = document.querySelector(".buttons");
+
+        const maxX = card.clientWidth - noBtn.clientWidth;
+        const maxY = card.clientHeight - noBtn.clientHeight;
+
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+        noBtn.style.transform = "none";
+    }
+
+    /* YES button → Confetti + Happy Dance GIF + Email + Reply Form */
+    document.getElementById("yesBtn").addEventListener("click", () => {
+
+        funnyMsg.innerHTML = `<div class="love-message">
+            Finally Poma Accepted 😍💖
+        </div>`;
+        funnyMsg.classList.remove("highlighted");
+
+        /* Change to happy dance GIF */
+        gif.src = "https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif";
+
+        /* Show reply form */
+        replyForm.classList.add("show");
+
+        /* Send acceptance email */
+        sendAcceptanceEmail();
+
+        startConfetti();
+    });
+
+    /* Send acceptance email */
+    function sendAcceptanceEmail() {
+        const formData = new FormData();
+        formData.append('access_key', 'e2b8491f-0367-487a-a96d-472c20e227a0');
+        formData.append('subject', 'Poma Accepted! 💖');
+        formData.append('from_name', 'Valentine Page');
+        formData.append('message', 'Finally Poma Accepted 😍💖');
+        formData.append('to_email', 'prasadshenavi1444@gmail.com');
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        }).catch(err => console.log('Email send error:', err));
+    }
+
+    /* Handle reply form submission */
+    emailForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        sendBtn.disabled = true;
+        sendBtn.innerText = "Sending...";
+
+        const formData = new FormData(emailForm);
+
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                successMsg.classList.add("show");
+                emailForm.reset();
+                sendBtn.innerText = "Sent! 💌";
+                
+                setTimeout(() => {
+                    successMsg.classList.remove("show");
+                    sendBtn.disabled = false;
+                    sendBtn.innerText = "Send 💌";
+                }, 3000);
+            } else {
+                alert("Failed to send. Please try again!");
+                sendBtn.disabled = false;
+                sendBtn.innerText = "Send 💌";
+            }
+        } catch (error) {
+            alert("Error sending message. Please try again!");
+            sendBtn.disabled = false;
+            sendBtn.innerText = "Send 💌";
+        }
+    });
+
+    /* Confetti */
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+
+    function startConfetti() {
+        for (let i = 0; i < 150; i++) {
+            pieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 6 + 4,
+                speed: Math.random() * 3 + 2
+            });
+        }
+        animateConfetti();
+    }
+
+    function animateConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        pieces.forEach(p => {
+            ctx.fillStyle = `hsl(${Math.random()*360}, 100%, 70%)`;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+            p.y += p.speed;
+
+            if (p.y > canvas.height) {
+                p.y = -10;
+            }
+        });
+
+        requestAnimationFrame(animateConfetti);
+    }
+
+    /* Floating hearts */
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerText = "💖";
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 20 + 10 + "px";
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 6000);
+    }, 400);
+</script>
+
+</body>
+</html>
